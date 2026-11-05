@@ -80,11 +80,6 @@
     var d = new Date(), fy = d.getMonth() >= 3 ? d.getFullYear() : d.getFullYear() - 1;
     $('#td-fy').innerHTML = [fy, fy - 1, fy - 2].map(function (y) { return '<option value="' + y + '">' + y + '-' + String(y + 1).slice(2) + '</option>'; }).join('');
     calc();
-    document.addEventListener('ns-lang', function () {   /* the language pack can arrive after the first drawing */
-      var v = $('#td-sec').value;
-      $('#td-sec').innerHTML = SEC.map(function (s) { return '<option value="' + s[0] + '">' + esc(t('td.s.' + s[0])) + ' (393, old ' + s[1] + ')</option>'; }).join('');
-      $('#td-sec').value = v; calc(); if (DOCS.length || $('#td-reg h3')) registers();
-    });
     root.addEventListener('input', function (e) { if (e.target.closest('.td-calc')) calc(); });
     root.addEventListener('change', function (e) { if (e.target.closest('.td-calc')) calc(); else if (e.target.id === 'td-fy') registers(); });
     root.addEventListener('click', function (e) { var b = e.target.closest('button'); if (b && b.dataset.do === 'print') window.print(); });
