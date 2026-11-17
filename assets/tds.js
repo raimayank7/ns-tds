@@ -12,9 +12,9 @@
      kinds: year = TDS when the year's total exceeds; month = when the month's payment exceeds; c = 194C (single bill over 30,000 or year over 1 lakh);
      over = only on the part of the year's total above the limit (194Q); none = always */
   var SEC = [
-    ['c', '194C', 1, 2, 'c', 0], ['jp', '194J', 10, 10, 'year', 50000], ['jt', '194J', 2, 2, 'year', 50000], ['jd', '194J', 10, 10, 'none', 0],
-    ['h', '194H', 2, 2, 'year', 20000], ['il', '194I', 10, 10, 'month', 50000], ['im', '194I', 2, 2, 'month', 50000], ['ib', '194-IB', 2, 2, 'month', 50000],
-    ['a', '194A', 10, 10, 'year', 10000], ['m', '194M', 2, 2, 'year', 5000000], ['q', '194Q', 0.1, 0.1, 'over', 5000000], ['tp', '194T', 10, 10, 'year', 20000]
+    ['c', '194C', 1, 2, 'c', 0, '393(1) Sl. 6(i)'], ['jp', '194J', 10, 10, 'year', 50000, '393(1) Sl. 6(iii)'], ['jt', '194J', 2, 2, 'year', 50000, '393(1) Sl. 6(iii)'], ['jd', '194J', 10, 10, 'none', 0, '393(1) Sl. 6(iii)'],
+    ['h', '194H', 2, 2, 'year', 20000, '393(1) Sl. 1(ii)'], ['il', '194I', 10, 10, 'month', 50000, '393(1) Sl. 2(ii)'], ['im', '194I', 2, 2, 'month', 50000, '393(1) Sl. 2(ii)'], ['ib', '194-IB', 2, 2, 'month', 50000, '393(1) Sl. 2(i)'],
+    ['a', '194A', 10, 10, 'year', 10000, '393(1) Sl. 5(iii)'], ['m', '194M', 2, 2, 'year', 5000000, '393(1) Sl. 6(ii)'], ['q', '194Q', 0.1, 0.1, 'over', 5000000, '393(1) Sl. 8(ii)'], ['tp', '194T', 10, 10, 'year', 20000, '393(3) Sl. 7']
   ];
   var LOW5 = { q: 1 };   /* no PAN: higher of 20% or twice the rate; 5% for purchase of goods */
   function S(id) { return SEC.filter(function (s) { return s[0] === id; })[0]; }
@@ -35,7 +35,7 @@
     var tds = apply ? Math.round(base * rate / 100) : 0, gst = num($('#td-gst').value), pay = r2(amt + gst - tds);
     var d = new Date(date), dep = d.getMonth() === 2 ? new Date(d.getFullYear(), 3, 30) : new Date(d.getFullYear(), d.getMonth() + 1, 7);
     var old = date < '2026-04-01';
-    var label = old ? t('td.sec.old', { o: s[1] }) : t('td.sec.new', { o: s[1] });
+    var label = old ? t('td.sec.old', { o: s[1] }) : t('td.sec.new', { o: s[1] }).replace('393', s[6]);
     $('#td-out').innerHTML = '<div class="g1-tiles"><div class="hi"><span>' + esc(t('td.k.tds')) + '</span><b>' + m(tds) + '</b></div><div><span>' + esc(t('td.k.rate')) + '</span><b>' + (apply ? rate + '%' : '—') + '</b></div>' +
       '<div><span>' + esc(t('td.k.pay')) + '</span><b>' + m(pay) + '</b></div><div><span>' + esc(t('td.k.dep')) + '</span><b>' + (apply ? esc(NS.fmtDate(dep.getFullYear() + '-' + ('0' + (dep.getMonth() + 1)).slice(-2) + '-' + ('0' + dep.getDate()).slice(-2))) : '—') + '</b></div></div>' +
       '<p><b>' + esc(label) + '</b> · ' + esc(t('td.s.' + s[0])) + '</p>' +
@@ -72,7 +72,7 @@
       tbl([t('g1.c.date'), t('td.c.no'), t('td.c.from'), t('td.c.recd'), t('td.k.tds')], cut.map(function (d) { return [NS.fmtDate(d.date), d.no || '', d.buyer && d.buyer.name || '', num(d.amount), num(d.tds)]; }));
   }
   function start() {
-    $('#td-sec').innerHTML = SEC.map(function (s) { return '<option value="' + s[0] + '">' + esc(t('td.s.' + s[0])) + ' (393, old ' + s[1] + ')</option>'; }).join('');
+    $('#td-sec').innerHTML = SEC.map(function (s) { return '<option value="' + s[0] + '">' + esc(t('td.s.' + s[0])) + ' (' + s[6] + ', old ' + s[1] + ')</option>'; }).join('');
     $('#td-date').value = NS.today();
     var sv = {}; try { sv = JSON.parse(localStorage.getItem('ns-td') || '{}'); } catch (e) {}
     if (sv.sec && S(sv.sec)) $('#td-sec').value = sv.sec;
@@ -82,7 +82,7 @@
     calc();
     document.addEventListener('ns-lang', function () {   /* the language pack can arrive after the first drawing */
       var v = $('#td-sec').value;
-      $('#td-sec').innerHTML = SEC.map(function (s) { return '<option value="' + s[0] + '">' + esc(t('td.s.' + s[0])) + ' (393, old ' + s[1] + ')</option>'; }).join('');
+      $('#td-sec').innerHTML = SEC.map(function (s) { return '<option value="' + s[0] + '">' + esc(t('td.s.' + s[0])) + ' (' + s[6] + ', old ' + s[1] + ')</option>'; }).join('');
       $('#td-sec').value = v; calc(); if (DOCS.length || $('#td-reg h3')) registers();
     });
     root.addEventListener('input', function (e) { if (e.target.closest('.td-calc')) calc(); });
