@@ -16,7 +16,7 @@
     ['h', '194H', 2, 2, 'year', 20000, '393(1) Sl. 1(ii)'], ['il', '194I', 10, 10, 'month', 50000, '393(1) Sl. 2(ii)'], ['im', '194I', 2, 2, 'month', 50000, '393(1) Sl. 2(ii)'], ['ib', '194-IB', 2, 2, 'month', 50000, '393(1) Sl. 2(i)'],
     ['a', '194A', 10, 10, 'year', 10000, '393(1) Sl. 5(iii)'], ['m', '194M', 2, 2, 'year', 5000000, '393(1) Sl. 6(ii)'], ['q', '194Q', 0.1, 0.1, 'over', 5000000, '393(1) Sl. 8(ii)'], ['tp', '194T', 10, 10, 'year', 20000, '393(3) Sl. 7']
   ];
-  var LOW5 = { q: 1 };   /* no PAN: higher of 20% or twice the rate; 5% for purchase of goods */
+  var LOW5 = { q: 1 };   /* no PAN or inoperative PAN: higher of 20% or the normal rate; 5% for purchase of goods (Income-tax Act, 2025, s.397(2)(b)(i); read 19 Nov 2026) */
   function S(id) { return SEC.filter(function (s) { return s[0] === id; })[0]; }
   function m(n) { return money(n, false); }
   function key(s) { return String(s || '').trim().toLowerCase().replace(/\s+/g, ' '); }
@@ -31,7 +31,7 @@
     else if (s[4] === 'month') { apply = amt > s[5]; why = apply ? '' : t('td.no.m', { l: money(s[5]) }); }
     else if (s[4] === 'year') { apply = ytd + amt > s[5]; why = apply ? '' : t('td.no.y', { l: money(s[5]) }); if (apply && ytd <= s[5]) { base = ytd + amt; catchup = ytd > 0; } }
     else if (s[4] === 'over') { base = Math.max(0, ytd + amt - s[5]) - Math.max(0, ytd - s[5]); apply = base > 0; why = apply ? '' : t('td.no.q', { l: money(s[5]) }); }
-    if (!pan) rate = LOW5[s[0]] ? 5 : Math.max(20, rate * 2);
+    if (!pan) rate = LOW5[s[0]] ? 5 : Math.max(20, rate);
     var tds = apply ? Math.round(base * rate / 100) : 0, gst = num($('#td-gst').value), pay = r2(amt + gst - tds);
     var d = new Date(date), dep = d.getMonth() === 2 ? new Date(d.getFullYear(), 3, 30) : new Date(d.getFullYear(), d.getMonth() + 1, 7);
     var old = date < '2026-04-01';
